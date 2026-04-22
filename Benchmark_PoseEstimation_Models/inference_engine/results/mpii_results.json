@@ -1,0 +1,23 @@
+{
+  "MediaPipe": {
+    "joint_angle": 11.05,
+    "pckh": 36.0,
+    "fps": 0.2,
+    "jitter": 308.21,
+    "occlusion": 98.8
+  },
+  "YOLOv8": {
+    "joint_angle": 23.49,
+    "pckh": 39.2,
+    "fps": 0.2,
+    "jitter": 255.82,
+    "occlusion": 93.6
+  },
+  "OpenPose": {
+    "joint_angle": 30.66,
+    "pckh": 54.7,
+    "fps": 0.2,
+    "jitter": 395.31,
+    "occlusion": 97.4
+  }
+}

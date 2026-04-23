@@ -17,3 +17,4 @@ UserSettings/
 *.mdb
 *.opendb
 *.VC.db
+.vscode/

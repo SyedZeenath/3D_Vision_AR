@@ -132,11 +132,11 @@ public class ModelPanelUI : MonoBehaviour
         float[] best = { jointBest, 100f, 30f, 0f, 100f };
 
         float[] raw = {
-            m.jointAngleAccuracy, m.pckh, m.fps,
+            m.jointAngleError, m.pckh, m.fps,
             m.interFrameJitter, m.occlusionDetectionRate
         };
         string[] formatted = {
-            m.hasGT ? $"{m.jointAngleAccuracy:F1}°" : $"{m.jointAngleAccuracy:F1}°",
+            m.hasGT ? $"{m.jointAngleError:F1}°" : $"{m.jointAngleError:F1}°",
             $"{m.pckh:F0}%",
             $"{m.fps:F0}",
             $"{m.interFrameJitter:F1}px",
@@ -164,7 +164,7 @@ public class ModelPanelUI : MonoBehaviour
     float ComputeScore(PoseMetrics m)
     {
         float[] raw = {
-            m.jointAngleAccuracy, m.pckh, m.fps,
+            m.jointAngleError, m.pckh, m.fps,
             m.interFrameJitter, m.occlusionDetectionRate
         };
         float total = 0f;

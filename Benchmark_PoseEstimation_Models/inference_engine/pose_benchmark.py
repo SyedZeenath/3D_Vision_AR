@@ -410,7 +410,7 @@ def run_mpii_eval(max_samples=500, output="results/mpii_results.json"):
     # Collect and save results
     results = {}
     print("\n" + "="*60)
-    print(f"{'Model':<14} {'PCKh':>8} {'MAE°':>8} {'FPS':>7} {'Jitter':>8} {'Occ':>7}")
+    print(f"{'Model':<14} {'PCKh':>8} {'JointError°':>8} {'FPS':>7} {'Jitter':>8} {'Occlusion':>7}")
     print("-"*60)
 
     for _, name, _, _ in model_defs:

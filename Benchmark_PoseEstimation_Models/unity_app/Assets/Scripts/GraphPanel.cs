@@ -30,7 +30,7 @@ public class GraphPanel : MonoBehaviour
     public Color colorOpenPose = new Color(0.96f, 0.26f, 0.21f);
 
     // ****** constants ******
-    static readonly string[] MetricKeys = { "Joint Angle", "PCKh", "FPS", "Jitter", "Occlusion" };
+    static readonly string[] MetricKeys = { "Joint Angle Error", "PCKh", "FPS", "Jitter", "Occlusion" };
 
     // Max expected values for bar height normalisation
     static readonly float[] MaxVal = { 30f, 100f, 40f, 20f, 100f };
@@ -80,7 +80,7 @@ public class GraphPanel : MonoBehaviour
         _latest[modelIdx] = m;
 
         float[] vals = {
-            m.jointAngleAccuracy, m.pckh, m.fps,
+            m.jointAngleError, m.pckh, m.fps,
             m.interFrameJitter, m.occlusionDetectionRate
         };
 
@@ -169,7 +169,7 @@ public class GraphPanel : MonoBehaviour
     }
 
     float GetMetricVal(PoseMetrics m, int idx) => idx switch {
-        0 => m.jointAngleAccuracy,
+        0 => m.jointAngleError,
         1 => m.pckh,
         2 => m.fps,
         3 => m.interFrameJitter,
@@ -289,7 +289,7 @@ public class GraphPanel : MonoBehaviour
             norm[m] = new float[N];
             if (_latest[m] == null) continue;
             float[] raw = {
-                _latest[m].jointAngleAccuracy,
+                _latest[m].jointAngleError,
                 _latest[m].pckh,
                 _latest[m].fps,
                 _latest[m].interFrameJitter,

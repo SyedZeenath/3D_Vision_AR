@@ -5,7 +5,7 @@
 [System.Serializable]
 public class PoseMetrics
 {
-    public float jointAngleAccuracy; // degrees - lower is better
+    public float jointAngleError; // degrees - lower is better
     public float pckh; // 0-100% - higher is better
     public float fps; // frames/s - higher is better
     public float interFrameJitter; // pixels - lower is better
@@ -16,7 +16,7 @@ public class PoseMetrics
 
     public PoseMetrics(float jointAngleVal, float pckhVal, float fpsVal, float jitterVal, float occlusionVal, bool hasGTVal = false)
     {
-        jointAngleAccuracy = jointAngleVal;
+        jointAngleError = jointAngleVal;
         pckh = pckhVal;
         fps = fpsVal;
         interFrameJitter = jitterVal;

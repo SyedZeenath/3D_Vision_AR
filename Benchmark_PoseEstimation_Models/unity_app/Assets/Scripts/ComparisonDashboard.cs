@@ -218,7 +218,7 @@ public class ComparisonDashboard : MonoBehaviour
 
         return new PoseMetrics
         {
-            jointAngleAccuracy = ExtractFloat(block, "joint_angle"),
+            jointAngleError = ExtractFloat(block, "joint_angle"),
             pckh = ExtractFloat(block, "pckh"),
             fps = ExtractFloat(block, "fps"),
             interFrameJitter = ExtractFloat(block, "jitter"),

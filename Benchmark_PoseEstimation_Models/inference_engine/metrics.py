@@ -160,7 +160,7 @@ class MetricsTracker:
     # --------------------
     def _compute_pckh(self, pred: np.ndarray, gt: np.ndarray, alpha=0.5, head_size=None) -> float:
         """
-        PCKh@0.5.
+        Compute PCKh (Percentage of Correct Keypoints within a threshold of head size).
         head_size: pre-computed from MPII upper-neck -> head-top distance (pixels). 
         If None, fall back to distance between first two GT joints.
         """

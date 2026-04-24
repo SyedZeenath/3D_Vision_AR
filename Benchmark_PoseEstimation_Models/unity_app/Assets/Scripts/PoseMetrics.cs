@@ -25,22 +25,19 @@ public class PoseMetrics
     }
 
     // Matches JSON keys sent by pose_benchmark.py:
-    // {"mae":f, "pckh":f, "fps":f, "jitter":f, "occlusion":f}
     public static PoseMetrics FromJson(string json)
     {
         var raw = UnityEngine.JsonUtility.FromJson<RawJson>(json);
-        return new PoseMetrics(raw.mae, raw.pckh, raw.fps,
-                               raw.jitter, raw.occlusion, raw.hasGT);
+        return new PoseMetrics(raw.joint_angle, raw.pckh, raw.fps, raw.jitter, raw.occlusion);
     }
 
     [System.Serializable]
     private class RawJson
     {
-        public float mae;
+        public float joint_angle;
         public float pckh;
         public float fps;
         public float jitter;
         public float occlusion;
-        public bool hasGT;
     }
 }

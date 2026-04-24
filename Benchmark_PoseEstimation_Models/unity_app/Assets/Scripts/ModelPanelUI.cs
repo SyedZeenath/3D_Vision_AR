@@ -41,7 +41,7 @@ public class ModelPanelUI : MonoBehaviour
     static readonly bool[] LowerIsBetter = { true, false, false, true, false };
 
     // Reference ranges for normalisation [worst, best]
-    static readonly float[] WorstRef = { 180f, 0f, 1f, 30f, 0f };
+    static readonly float[] WorstRef = { 50f, 0f, 1f, 30f, 0f };
     static readonly float[] BestRef = { 0f, 100f, 30f, 0f, 100f };
 
     PoseMetrics _metrics;
@@ -124,19 +124,12 @@ public class ModelPanelUI : MonoBehaviour
 
     void UpdateMetricRows(PoseMetrics m)
     {
-        // Joint angle range depends on mode
-        float jointWorst = m.hasGT ? 30f : 180f; // Mean Angle Error(MAE) for MPII, mean angle for live
-        float jointBest = m.hasGT ? 0f : 90f; // 0=perfect MAE, 90=mid-range angle
-
-        float[] worst = { jointWorst, 0f, 1f, 30f, 0f };
-        float[] best = { jointBest, 100f, 30f, 0f, 100f };
-
         float[] raw = {
             m.jointAngleError, m.pckh, m.fps,
             m.interFrameJitter, m.occlusionDetectionRate
         };
         string[] formatted = {
-            m.hasGT ? $"{m.jointAngleError:F1}°" : $"{m.jointAngleError:F1}°",
+            $"{m.jointAngleError:F1}°",
             $"{m.pckh:F0}%",
             $"{m.fps:F0}",
             $"{m.interFrameJitter:F1}px",
@@ -146,7 +139,8 @@ public class ModelPanelUI : MonoBehaviour
         for (int i = 0; i < metricRows.Length && i < raw.Length; i++)
         {
             if (metricRows[i] == null) continue;
-            float goodness = Mathf.Clamp01(Mathf.InverseLerp(worst[i], best[i], raw[i]));
+            
+            float goodness = Mathf.Clamp01(Mathf.InverseLerp(WorstRef[i], BestRef[i], raw[i]));
             metricRows[i].SetValue(formatted[i], goodness);
         }
     }

@@ -25,7 +25,7 @@ MP_ANGLE_TRIPLETS = [
 
 class MetricsTracker:
     def __init__(self, model_name: str, window: int = 60, angle_triplets=None, 
-                 conf_threshold: float = 0.5, image_width: int = 640, image_height: int = 480):
+                 conf_threshold: float = 0.2, image_width: int = 640, image_height: int = 480):
         self.model_name = model_name
         self.window = window
         self.conf_threshold = conf_threshold
@@ -80,7 +80,7 @@ class MetricsTracker:
 
         # ------ PCKh/detection rate ------
         if gt_kps is not None:
-            self._pckh_vals.append(self._compute_pckh(pred_kps, gt_kps, head_size=head_size))
+            self._pckh_vals.append(self._compute_pckh(pred_kps, gt_kps, confidences, head_size=head_size))
         else:
             # Proxy: fraction of joints detected above threshold
             self._pckh_vals.append(n_visible / max(n_total, 1) * 100.0)
@@ -92,11 +92,28 @@ class MetricsTracker:
             # For MPII we can compute actual angle error against Ground truth(GT)
             gt_vis = np.ones(len(gt_kps), dtype=bool)
             gt_angles = self._compute_angles(gt_kps, gt_vis)
-            angle_metric = float(np.mean(np.abs(angles - gt_angles)))
+            
+            # angle_metric = float(np.mean(np.abs(angles - gt_angles)))
+            diff = np.abs(angles - gt_angles)
+            # Penalize missing joints explicitly
+            invalid_mask = np.isnan(diff)
+            diff[invalid_mask] = 180.0  # max angular error
+
+            angle_metric = float(np.mean(diff))
         else:
             # for live/Kaggle modes we don't have GT angles, so track inter-frame angle changes as a proxy for stability
             if self._prev_angles is not None:
-                angle_metric = float(np.mean(np.abs(angles - self._prev_angles)))
+                # angle_metric = float(np.mean(np.abs(angles - self._prev_angles)))
+                diff = np.abs(angles - self._prev_angles)
+                valid = ~np.isnan(diff)
+
+                if np.sum(valid) == 0:
+                    angle_metric = 180.0
+                else:
+                    diff_valid = diff[valid]
+                    missing_penalty = (len(diff) - np.sum(valid)) * 180.0
+
+                    angle_metric = (np.sum(diff_valid) + missing_penalty) / len(diff)                                                                                   
             else:
                 angle_metric = 0.0
 
@@ -158,7 +175,7 @@ class MetricsTracker:
     # --------------------
     # Internal helpers
     # --------------------
-    def _compute_pckh(self, pred: np.ndarray, gt: np.ndarray, alpha=0.5, head_size=None) -> float:
+    def _compute_pckh(self, pred: np.ndarray, gt: np.ndarray, confidences, alpha=0.5, head_size=None) -> float:
         """
         Compute PCKh (Percentage of Correct Keypoints within a threshold of head size).
         head_size: pre-computed from MPII upper-neck -> head-top distance (pixels). 
@@ -168,24 +185,29 @@ class MetricsTracker:
             head_size = float(np.linalg.norm(gt[0] - gt[1])) + 1e-6
 
         dists   = np.linalg.norm(pred - gt, axis=1)
-        correct = dists < alpha * head_size # alpha=0.5 means within 50% of head size is considered correct
-        return float(correct.mean() * 100.0)
+        visible = confidences >= self.conf_threshold
+        correct = (dists < alpha * head_size) & visible # alpha=0.5 means within 50% of head size is considered correct
+        # Penalize missing joints
+        total = len(gt)
+        correct_count = np.sum(correct)
+        
+        return float((correct_count / total) * 100.0)
 
     def _compute_angles(self, kps: np.ndarray, visible: np.ndarray) -> np.ndarray:
         angles = []
         for (a, v, b) in self.angle_triplets:
             max_idx = max(a, v, b)
-            if max_idx >= len(kps) or not (visible[a] and visible[v] and visible[b]):
-                angles.append(0.0)
+
+            if max_idx >= len(kps) or not (visible[v] and (visible[a] or visible[b])):
+                angles.append(np.nan)
                 continue
 
             v1 = kps[a] - kps[v]
             v2 = kps[b] - kps[v]
             n1, n2 = np.linalg.norm(v1), np.linalg.norm(v2)
-
-            # If either vector is too small, we can't define a stable angle, so treat as 0 error (no penalty)
+            # If either vector is too small, we can't define a stable angle, treat as missing and add a penalty
             if n1 < 1e-6 or n2 < 1e-6:
-                angles.append(0.0)
+                angles.append(np.nan)
                 continue
 
             cos = np.clip(np.dot(v1, v2) / (n1 * n2), -1.0, 1.0)

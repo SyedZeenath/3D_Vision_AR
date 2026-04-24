@@ -318,7 +318,7 @@ def run():
 
     print("Loading models...")
     workers = [
-        ModelWorker(IDX_MEDIAPIPE, "MediaPipe", MediaPipeModel(), MP_ANGLE_TRIPLETS, send_sock, unity_addr),
+        ModelWorker(IDX_MEDIAPIPE, "MediaPipe", MediaPipeModel(), COCO_ANGLE_TRIPLETS, send_sock, unity_addr),
         ModelWorker(IDX_YOLO, "YOLOv8", YOLOModel(), COCO_ANGLE_TRIPLETS, send_sock, unity_addr),
         ModelWorker(IDX_OPENPOSE, "OpenPose", OpenPoseModel(), COCO_ANGLE_TRIPLETS, send_sock, unity_addr),
     ]
@@ -377,7 +377,7 @@ def run_mpii_eval(max_samples=500, output="results/mpii_results.json"):
 
     print("Loading models for MPII eval...")
     model_defs = [
-        (IDX_MEDIAPIPE, "MediaPipe", MediaPipeModel(), MP_ANGLE_TRIPLETS),
+        (IDX_MEDIAPIPE, "MediaPipe", MediaPipeModel(), COCO_ANGLE_TRIPLETS),
         (IDX_YOLO, "YOLOv8", YOLOModel(), COCO_ANGLE_TRIPLETS),
         (IDX_OPENPOSE, "OpenPose", OpenPoseModel(), COCO_ANGLE_TRIPLETS),
     ]

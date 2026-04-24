@@ -120,7 +120,11 @@ public class SkeletonOverlayRenderer : MonoBehaviour
             jrt.anchoredPosition = ToLocal(kps[i]);
             jrt.sizeDelta = new Vector2(jointRadius * 2f, jointRadius * 2f);
             var img = jrt.GetComponent<Image>();
-            if (img) img.color = jointColor;
+            if (img) 
+            {
+                Color jointConf = Color.Lerp(Color.red, Color.green, conf[i]);
+                img.color = jointConf;
+            } 
         }
         for (int i = nKps; i < _joints.Count; i++)
             if (_joints[i]) _joints[i].gameObject.SetActive(false);

@@ -85,7 +85,7 @@ This is a comprehensive class project focused on benchmarking three pose estimat
 │       ├── Packages/                    # Unity package dependencies
 │       └── ProjectSettings/             # Unity project configuration
 │
-├── README.md                   
+├── README.md               
 └── .git/                                # Version control
 ```
 
@@ -172,6 +172,10 @@ cd ../../Benchmark_PoseEstimation_Models/unity_app
 ## Usage
 
 ### Running the Benchmark
+
+**Important**: Both applications must run simultaneously - Python for the Backend inference and Unity for the User Interface visualization.
+
+### Running the Backend
 
 #### Mode 1: Live Camera Feed
 
